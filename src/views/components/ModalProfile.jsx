@@ -29,7 +29,7 @@ const style = {
     p: 4,
 };
 
-export default function BasicModal(data) {
+export default function BasicModal(data, onClose, fetchData) {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -44,18 +44,24 @@ export default function BasicModal(data) {
 
 
     const handleCloseModal = () => {
-        setOpen(false); // Đặt trạng thái modal về false để đóng
+        setOpen(false);
+        if (onClose) onClose(); // Gọi callback từ parent để đồng bộ
     };
+
     const onSubmit = async (data) => {
         // console.log('rffasfsafdaf')
         try {
             console.log("Login Data:", data);
             const response = await updateUser(data); // Gọi API login
-            if (response.message === 'User updated successfully') { // Kiểm tra nếu cập nhật thành công
-                handleCloseModal(); // Đóng modal
-                setData(response.user)
-                // fetchUsers(); // Gọi lại API để lấy danh sách user mới
-            }
+            console.log('updateUser');
+            // handleCloseModal(); // Đóng modal
+            setData(data)
+            // console.log('setData');
+            // Chờ fetchData hoàn thành trước khi đóng modal
+            if (fetchData) await fetchData();
+
+            // Đóng modal sau khi dữ liệu đã cập nhật hoàn chỉnh
+            handleCloseModal();
         } catch (error) {
             console.error("Login failed:", error);
         }
@@ -108,17 +114,6 @@ export default function BasicModal(data) {
                             error={!!errors.address}
                             helperText={errors.address?.message}
                         />
-                        <FormLabel id="demo-row-radio-buttons-group-label">Giới tính</FormLabel>
-                        <RadioGroup
-                            row
-                            aria-labelledby="demo-row-radio-buttons-group-label"
-                            name="row-radio-buttons-group"
-                            defaultValue={data.dataUser.gender}
-                            {...register("gender", { required: "Vui lòng chọn giới tính!" })}
-                        >
-                            <FormControlLabel value="male" control={<Radio />} label="Nam" />
-                            <FormControlLabel value="female" control={<Radio />} label="Nữ" />
-                        </RadioGroup>
                         <Button
                             type='submit'
                             sx={{ mt: 2 }}

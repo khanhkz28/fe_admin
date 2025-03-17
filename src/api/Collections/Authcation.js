@@ -51,8 +51,9 @@ export const getAllUser = async () => {
 };
 
 export const updateUser = async (updatedData) => {
+    
     try {
-        const response = await axiosClient.put(`/admin/users`, updatedData);
+        const response = await axiosClient.put(`/admin/users/update`, updatedData);
         console.log(response.data);
         return response.data;
     } catch (error) {
